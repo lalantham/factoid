@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: factoid-deployment
+  labels:
+    app: factoid
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: factoid
+  template:
+    metadata:
+      labels:
+        app: factoid
+    spec:
+      containers:
+      - name: factoid
+        image: your-container-registry/factoid:latest # Change to your image path
+        ports:
+        - containerPort: 8501
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: factoid-service
+spec:
+  type: NodePort # Use LoadBalancer instead if deploying to a cloud provider
+  selector:
+    app: factoid
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
